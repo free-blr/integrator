@@ -1,0 +1,117 @@
+# github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
+## explicit
+github.com/Azure/go-ansiterm
+github.com/Azure/go-ansiterm/winterm
+# github.com/Masterminds/squirrel v1.4.0
+## explicit
+github.com/Masterminds/squirrel
+# github.com/Microsoft/go-winio v0.4.14
+## explicit
+github.com/Microsoft/go-winio
+github.com/Microsoft/go-winio/pkg/guid
+# github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5
+## explicit
+github.com/Nvveen/Gotty
+# github.com/cenkalti/backoff v2.2.1+incompatible
+github.com/cenkalti/backoff
+# github.com/containerd/continuity v0.0.0-20200710164510-efbc4488d8fe
+## explicit
+github.com/containerd/continuity/pathdriver
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/docker/go-connections v0.4.0
+## explicit
+github.com/docker/go-connections/nat
+# github.com/docker/go-units v0.4.0
+## explicit
+github.com/docker/go-units
+# github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+## explicit
+github.com/go-telegram-bot-api/telegram-bot-api
+# github.com/gotestyourself/gotestyourself v2.2.0+incompatible
+## explicit
+# github.com/jmoiron/sqlx v1.2.0
+## explicit
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/konsorten/go-windows-terminal-sequences v1.0.2
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/lann/builder v0.0.0-20180802200727-47ae307949d0
+github.com/lann/builder
+# github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0
+github.com/lann/ps
+# github.com/lib/pq v1.2.0
+## explicit
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/opencontainers/go-digest v1.0.0-rc1
+github.com/opencontainers/go-digest
+# github.com/opencontainers/image-spec v1.0.1
+## explicit
+github.com/opencontainers/image-spec/specs-go
+github.com/opencontainers/image-spec/specs-go/v1
+# github.com/opencontainers/runc v0.1.1
+## explicit
+github.com/opencontainers/runc/libcontainer/user
+# github.com/ory/dockertest v3.3.5+incompatible
+## explicit
+github.com/ory/dockertest/docker
+github.com/ory/dockertest/docker/opts
+github.com/ory/dockertest/docker/pkg/archive
+github.com/ory/dockertest/docker/pkg/fileutils
+github.com/ory/dockertest/docker/pkg/homedir
+github.com/ory/dockertest/docker/pkg/idtools
+github.com/ory/dockertest/docker/pkg/ioutils
+github.com/ory/dockertest/docker/pkg/jsonmessage
+github.com/ory/dockertest/docker/pkg/longpath
+github.com/ory/dockertest/docker/pkg/mount
+github.com/ory/dockertest/docker/pkg/pools
+github.com/ory/dockertest/docker/pkg/stdcopy
+github.com/ory/dockertest/docker/pkg/system
+github.com/ory/dockertest/docker/pkg/term
+github.com/ory/dockertest/docker/pkg/term/windows
+github.com/ory/dockertest/docker/types
+github.com/ory/dockertest/docker/types/blkiodev
+github.com/ory/dockertest/docker/types/container
+github.com/ory/dockertest/docker/types/filters
+github.com/ory/dockertest/docker/types/mount
+github.com/ory/dockertest/docker/types/network
+github.com/ory/dockertest/docker/types/registry
+github.com/ory/dockertest/docker/types/strslice
+github.com/ory/dockertest/docker/types/versions
+# github.com/pkg/errors v0.9.1
+## explicit
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
+## explicit
+github.com/rubenv/sql-migrate
+github.com/rubenv/sql-migrate/sqlparse
+# github.com/sirupsen/logrus v1.4.2
+github.com/sirupsen/logrus
+# github.com/stretchr/testify v1.4.0
+## explicit
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+github.com/stretchr/testify/suite
+# github.com/technoweenie/multipartstreamer v1.0.1
+## explicit
+github.com/technoweenie/multipartstreamer
+# golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
+golang.org/x/net/context
+# golang.org/x/sys v0.0.0-20191220142924-d4481acd189f
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# google.golang.org/appengine v1.6.6
+## explicit
+# gopkg.in/gorp.v1 v1.7.2
+gopkg.in/gorp.v1
+# gopkg.in/ory-am/dockertest.v3 v3.3.5
+## explicit
+gopkg.in/ory-am/dockertest.v3
+# gopkg.in/yaml.v2 v2.2.5
+gopkg.in/yaml.v2
+# gotest.tools v2.2.0+incompatible
+## explicit

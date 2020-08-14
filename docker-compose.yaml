@@ -1,0 +1,33 @@
+version: '3'
+services:
+  database:
+    image: "postgres:11.2"
+    ports:
+      - "5432:5432"
+    env_file:
+      - env/database.env
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  migrations:
+    image: integrator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - env/migrations.env
+    command: ["/bin/sql-migrate", "up", "-config=/opt/configs/db.yaml", "-env=${ENVIRONMENT}"]
+    volumes:
+      - ./configs:/opt/configs
+    depends_on:
+      - database
+  bot:
+    image: integrator
+    env_file:
+      - env/bot.env
+    depends_on:
+      - database
+      - migrations
+    command: ["/app/bot"]
+volumes:
+  database-data:
+  configs:

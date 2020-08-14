@@ -1,0 +1,5 @@
+local:
+  dialect: postgres
+  datasource: host=database dbname=${DB} user=${DB_USER} password=${DB_PASSWORD} sslmode=disable
+  dir: /app/migrations
+  table: migrations
