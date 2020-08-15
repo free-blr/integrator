@@ -9,8 +9,8 @@ var (
 
 type Request struct {
 	ID       int         `db:"id"`
-	Type     RequestType `db:"request_type"`
-	TgUserID int         `db:"tg_user_id"`
+	Type     RequestType `db:"type"`
+	TgUserID string      `db:"tg_user_id"`
 	Tag      Tag         `db:"tag"`
 
 	TagID int `db:"_"`

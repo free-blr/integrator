@@ -20,7 +20,7 @@ func NewRequest(db sqlx.ExtContext) *Request {
 }
 
 func (r *Request) GetByOptions(ctx context.Context, opts model.RequestQueryOptions) (_ []*model.Request, err error) {
-	qb := r.baseQuery().OrderBy("b.created_at DESC")
+	qb := r.baseQuery().OrderBy("r.created_at DESC")
 
 	if len(opts.Type) != 0 {
 		qb = qb.Where(sq.Eq{"r.type": opts.Type})
@@ -30,6 +30,27 @@ func (r *Request) GetByOptions(ctx context.Context, opts model.RequestQueryOptio
 	}
 
 	return r.selects(ctx, qb)
+}
+
+func (r *Request) Insert(ctx context.Context, requests ...*model.Request) (err error) {
+	qb := r.queryBuilder().
+		Insert("request").
+		Columns("type", "tg_user_id", "tag_id").
+		Suffix(`ON CONFLICT(type, tg_user_id, tag_id) DO NOTHING`)
+
+	for _, request := range requests {
+		qb = qb.Values(request.Type, request.TgUserID, request.TagID)
+	}
+
+	query, args, err := qb.ToSql()
+	if err != nil {
+		return errors.Wrap(err, "could not build query")
+	}
+	if _, err := r.db.ExecContext(ctx, query, args...); err != nil {
+		return errors.Wrap(err, "could insert requests")
+	}
+
+	return nil
 }
 
 func (r *Request) selects(ctx context.Context, builder sq.SelectBuilder) ([]*model.Request, error) {
@@ -55,8 +76,8 @@ func (r *Request) baseQuery() sq.SelectBuilder {
 			`r.id`,
 			`r.type`,
 			`r.tg_user_id`,
-			`t.id as tag.id`,
-			`t.name as tag.name`,
+			`t.id as "tag.id"`,
+			`t.name as "tag.name"`,
 		).
 		From("request AS r").
 		Join("tag t on t.id = r.tag_id")
