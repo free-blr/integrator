@@ -37,7 +37,7 @@ func (s *RequestSuite) TearDownTest() {
 func (s *RequestSuite) TestRequestRepository_GetByOptions() {
 	_, err := s.builder.
 		Insert("request").
-		Columns("id", "type", "tg_user_id", "tag_id").
+		Columns("id", "type", "tg_username", "tag_id").
 		Values(1, model.RequestTypeIn, "11", 1).
 		Values(2, model.RequestTypeIn, "12", 2).
 		Values(3, model.RequestTypeOut, "13", 1).
@@ -60,17 +60,17 @@ func (s *RequestSuite) TestRequestRepository_GetByOptions() {
 
 	s.Run("get requests type", func() {
 		expected := []*model.Request{{
-			ID:       1,
-			Type:     model.RequestTypeIn,
-			TgUserID: "11",
+			ID:         1,
+			Type:       model.RequestTypeIn,
+			TgUsername: "11",
 			Tag: model.Tag{
 				ID:   1,
 				Name: "Автопомощь",
 			},
 		}, {
-			ID:       2,
-			Type:     model.RequestTypeIn,
-			TgUserID: "12",
+			ID:         2,
+			Type:       model.RequestTypeIn,
+			TgUsername: "12",
 			Tag: model.Tag{
 				ID:   2,
 				Name: "Хирургия",
@@ -92,18 +92,18 @@ func (s *RequestSuite) TestRequestRepository_GetByOptions() {
 func (s *RequestSuite) TestRequestRepository_Insert() {
 	s.Run("insert", func() {
 		expected := []*model.Request{{
-			ID:       1,
-			Type:     model.RequestTypeIn,
-			TgUserID: "11",
+			ID:         1,
+			Type:       model.RequestTypeIn,
+			TgUsername: "11",
 			Tag: model.Tag{
 				ID:   1,
 				Name: "Автопомощь",
 			},
 			TagID: 1,
 		}, {
-			ID:       2,
-			Type:     model.RequestTypeIn,
-			TgUserID: "12",
+			ID:         2,
+			Type:       model.RequestTypeIn,
+			TgUsername: "12",
 			Tag: model.Tag{
 				ID:   2,
 				Name: "Хирургия",

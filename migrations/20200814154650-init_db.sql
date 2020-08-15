@@ -9,15 +9,15 @@ CREATE TABLE "tag"
 
 CREATE TABLE "request"
 (
-    "id"         SERIAL PRIMARY KEY,
-    "type"       request_type NOT NULL,
-    "tg_user_id" VARCHAR      NOT NULL,
-    "tag_id"     INT          NOT NULL,
-    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "id"          SERIAL PRIMARY KEY,
+    "type"        request_type NOT NULL,
+    "tg_username" VARCHAR      NOT NULL,
+    "tag_id"      INT          NOT NULL,
+    "created_at"  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT tag_id_fkey FOREIGN KEY ("tag_id")
         REFERENCES tag (id) MATCH SIMPLE
         ON UPDATE NO ACTION ON DELETE NO ACTION,
-    UNIQUE ("type", "tg_user_id", "tag_id")
+    UNIQUE ("type", "tg_username", "tag_id")
 );
 
 -- +migrate Down

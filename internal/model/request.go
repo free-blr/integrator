@@ -8,15 +8,16 @@ var (
 )
 
 type Request struct {
-	ID       int         `db:"id"`
-	Type     RequestType `db:"type"`
-	TgUserID string      `db:"tg_user_id"`
-	Tag      Tag         `db:"tag"`
+	ID         int         `db:"id"`
+	Type       RequestType `db:"type"`
+	TgUsername string      `db:"tg_username"`
+	Tag        Tag         `db:"tag"`
 
 	TagID int `db:"_"`
 }
 
 type RequestQueryOptions struct {
-	Type  []RequestType
-	TagID []int
+	TgUsername []string
+	Type       []RequestType
+	TagID      []int
 }

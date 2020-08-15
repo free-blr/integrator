@@ -76,13 +76,17 @@ func (b *Bot) resolveHandler(command string) commandHandler {
 		return b.handleAskHelp
 	case CommandOfferHelp:
 		return b.handleOfferHelp
+	case CommandGetAskHelp:
+		return b.handleGetAskHelp
+	case CommandGetOfferHelp:
+		return b.handleGetOfferHelp
 	default:
 		return b.handleUnknown
 	}
 }
 
 func (b *Bot) handleHelp(_ context.Context, msg *tgbotapi.Message) error {
-	rsp := tgbotapi.NewMessage(msg.Chat.ID, "Введите /askhelp или /offerhelp.")
+	rsp := tgbotapi.NewMessage(msg.Chat.ID, fmt.Sprintf("Введите /%s или /%s.", CommandAskHelp, CommandOfferHelp))
 	_, err := b.api.Send(rsp)
 	return err
 }
@@ -111,6 +115,30 @@ func (b *Bot) handleOfferHelp(ctx context.Context, msg *tgbotapi.Message) error 
 	return err
 }
 
+func (b *Bot) handleGetAskHelp(ctx context.Context, msg *tgbotapi.Message) error {
+	selectors, err := b.tagSelector(ctx, CommandGetAskHelp)
+	if err != nil {
+		return err
+	}
+
+	rsp := tgbotapi.NewMessage(msg.Chat.ID, "Выберите раздел")
+	rsp.ReplyMarkup = selectors
+	_, err = b.api.Send(rsp)
+	return err
+}
+
+func (b *Bot) handleGetOfferHelp(ctx context.Context, msg *tgbotapi.Message) error {
+	selectors, err := b.tagSelector(ctx, CommandGetOfferHelp)
+	if err != nil {
+		return errors.Wrap(err, "tag selector")
+	}
+
+	rsp := tgbotapi.NewMessage(msg.Chat.ID, "Выберите раздел")
+	rsp.ReplyMarkup = selectors
+	_, err = b.api.Send(rsp)
+	return err
+}
+
 func (b *Bot) handleUnknown(_ context.Context, msg *tgbotapi.Message) error {
 	rsp := tgbotapi.NewMessage(msg.Chat.ID, "Введите /askhelp или /offerhelp.")
 	_, err := b.api.Send(rsp)
@@ -122,45 +150,104 @@ func (b *Bot) handleCallbackQuery(ctx context.Context, msg *tgbotapi.CallbackQue
 	if len(parts) != 3 {
 		return fmt.Errorf("'%s' not valid data command", msg.Data)
 	}
-	action, subject, idstr := parts[0], parts[1], parts[2]
+	action, subject, idstr := Command(parts[0]), parts[1], parts[2]
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		return fmt.Errorf("'%s' is not valid id", idstr)
+	}
 
 	//todo refactor this shit
 	switch subject {
 	case "tag":
-		id, err := strconv.Atoi(idstr)
-		if err != nil {
-			return fmt.Errorf("'%s' is not valid id", idstr)
-		}
-
-		r := &model.Request{
-			TgUserID: msg.From.UserName, //todo may be save more info (or not for security reason?)
-			TagID:    id,
-		}
-
 		switch action {
-		case CommandAskHelp:
-			r.Type = model.RequestTypeIn
-		case CommandOfferHelp:
-			r.Type = model.RequestTypeOut
+		case CommandAskHelp, CommandOfferHelp:
+			return b.addRequest(ctx, msg, action, id)
+		case CommandGetAskHelp, CommandGetOfferHelp:
+			return b.showRequests(ctx, msg, action, id)
 		default:
 			return fmt.Errorf("'%s' not valid action", action)
-		}
-
-		err = b.requestService.Insert(ctx, r)
-		if err != nil {
-			return errors.Wrap(err, "request service insert")
-		}
-
-		msg := tgbotapi.NewMessage(msg.Message.Chat.ID, "Ваша заявка принята")
-		msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(false)
-		_, err = b.api.Send(msg)
-		if err != nil {
-			return err
 		}
 	default:
 		return fmt.Errorf("'%s' not valid subject", subject)
 	}
 
+	return nil
+}
+
+func (b *Bot) addRequest(ctx context.Context, msg *tgbotapi.CallbackQuery, action Command, id int) error {
+	r := &model.Request{
+		TgUsername: msg.From.UserName, //todo may be save more info (or not for security reason?)
+		TagID:      id,
+	}
+	switch action {
+	case CommandAskHelp:
+		r.Type = model.RequestTypeIn
+	case CommandOfferHelp:
+		r.Type = model.RequestTypeOut
+	default:
+		return fmt.Errorf("'%s' not valid action", action)
+	}
+
+	err := b.requestService.Insert(ctx, r)
+	if err != nil {
+		return errors.Wrap(err, "request service insert")
+	}
+
+	rsp := tgbotapi.NewMessage(msg.Message.Chat.ID, "Ваша заявка принята")
+	rsp.ReplyMarkup = tgbotapi.NewRemoveKeyboard(false)
+	_, err = b.api.Send(rsp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *Bot) showRequests(ctx context.Context, msg *tgbotapi.CallbackQuery, action Command, id int) error {
+	opts := model.RequestQueryOptions{
+		TagID: []int{id},
+	}
+	switch action {
+	case CommandGetAskHelp:
+		opts.Type = append(opts.Type, model.RequestTypeIn)
+	case CommandGetOfferHelp:
+		opts.Type = append(opts.Type, model.RequestTypeOut)
+	default:
+		return fmt.Errorf("'%s' not valid action", action)
+	}
+
+	requests, err := b.requestService.GetByOptions(ctx, opts)
+	if err != nil {
+		return err
+	}
+
+	if requests == nil {
+		rsp := tgbotapi.NewMessage(msg.Message.Chat.ID, "На данный момент заявок по данному тэгу нет")
+		rsp.ReplyMarkup = tgbotapi.NewRemoveKeyboard(false)
+		_, err = b.api.Send(rsp)
+		return err
+	}
+
+	byTag := map[model.Tag][]*model.Request{}
+	for _, request := range requests {
+		byTag[request.Tag] = append(byTag[request.Tag], request)
+	}
+
+	var responseText string
+	for tag, requests := range byTag {
+		responseText += fmt.Sprintf("%s:\n", tag.Name)
+		var unames []string
+		for _, request := range requests {
+			unames = append(unames, fmt.Sprintf("@%s", request.TgUsername))
+		}
+		responseText += fmt.Sprintf("%s\n", strings.Join(unames, ", "))
+	}
+
+	rsp := tgbotapi.NewMessage(msg.Message.Chat.ID, responseText)
+	rsp.ReplyMarkup = tgbotapi.NewRemoveKeyboard(false)
+	_, err = b.api.Send(rsp)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

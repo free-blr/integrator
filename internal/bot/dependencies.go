@@ -11,5 +11,6 @@ type tagService interface {
 }
 
 type requestService interface {
+	GetByOptions(context.Context, model.RequestQueryOptions) ([]*model.Request, error)
 	Insert(context.Context, ...*model.Request) error
 }

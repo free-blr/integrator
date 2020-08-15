@@ -22,6 +22,9 @@ func NewRequest(db sqlx.ExtContext) *Request {
 func (r *Request) GetByOptions(ctx context.Context, opts model.RequestQueryOptions) (_ []*model.Request, err error) {
 	qb := r.baseQuery().OrderBy("r.created_at DESC")
 
+	if len(opts.TgUsername) != 0 {
+		qb = qb.Where(sq.Eq{"r.tg_username": opts.TgUsername})
+	}
 	if len(opts.Type) != 0 {
 		qb = qb.Where(sq.Eq{"r.type": opts.Type})
 	}
@@ -35,11 +38,11 @@ func (r *Request) GetByOptions(ctx context.Context, opts model.RequestQueryOptio
 func (r *Request) Insert(ctx context.Context, requests ...*model.Request) (err error) {
 	qb := r.queryBuilder().
 		Insert("request").
-		Columns("type", "tg_user_id", "tag_id").
-		Suffix(`ON CONFLICT(type, tg_user_id, tag_id) DO NOTHING`)
+		Columns("type", "tg_username", "tag_id").
+		Suffix(`ON CONFLICT(type, tg_username, tag_id) DO NOTHING`)
 
 	for _, request := range requests {
-		qb = qb.Values(request.Type, request.TgUserID, request.TagID)
+		qb = qb.Values(request.Type, request.TgUsername, request.TagID)
 	}
 
 	query, args, err := qb.ToSql()
@@ -75,7 +78,7 @@ func (r *Request) baseQuery() sq.SelectBuilder {
 		Select(
 			`r.id`,
 			`r.type`,
-			`r.tg_user_id`,
+			`r.tg_username`,
 			`t.id as "tag.id"`,
 			`t.name as "tag.name"`,
 		).
